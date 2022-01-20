@@ -7,9 +7,9 @@ export default function AccountButton({wallet}) {
     const go_to_account_page = () => router.push('/account');
 
     return (
-        <button onClick={go_to_account_page} className='border border-neutral-700 px-4 py-1 rounded hover:border-white transition-all'>
+        <button onClick={go_to_account_page} className='flex flex-row gap-2 items-center justify-center text-xl border bg-dark-300 border-neutral-700 py-2 px-4 rounded hover:border-white transition-all'>
             {/* <Image src={near_logo} layout="responsive"/> */}
-            {wallet.getAccountId()}
+            My Account
         </button>
     )
 }

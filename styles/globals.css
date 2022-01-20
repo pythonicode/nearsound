@@ -23,3 +23,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.play-button {
+  @apply flex items-center justify-center w-8 h-8 rounded bg-gradient-to-tr from-neutral-400 to-neutral-200 transition-all hover:opacity-75;
+}
