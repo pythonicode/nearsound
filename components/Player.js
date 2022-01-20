@@ -70,18 +70,18 @@ export default function Player() {
     }
 
     const play_pause_button = () => {
-        if(playing) return <button className='play-button' onClick={pause_music}><Image src={pause} width={"16px"} height={"16px"}/></button>
-        else return <button className='play-button' onClick={play_music}><Image src={play} width={"16px"} height={"16px"}/></button>
+        if(playing) return <button className='play-button' onClick={pause_music}><Image src={pause} alt="pause button" width={"16px"} height={"16px"}/></button>
+        else return <button className='play-button' onClick={play_music}><Image src={play} alt="play button" width={"16px"} height={"16px"}/></button>
     }
 
     return (
         <footer className='w-full flex flex-col items-center justify-center py-4 h-32 gap-2 border-t-4 border-double border-dark-100'>
             <div className='flex flex-row items-center justify-center gap-4'>
-                <button className='transition-all hover:opacity-75'><Image src={loop} width={"16px"} height={"16px"}/></button>
-                <button className='transition-all hover:opacity-75'><Image src={shuffle} width={"16px"} height={"16px"}/></button>
-                <button className='transition-all hover:opacity-75'><Image src={skip_backward} width={"16px"} height={"16px"}/></button>
+                <button className='transition-all hover:opacity-75'><Image src={loop} alt="loop button" width={"16px"} height={"16px"}/></button>
+                <button className='transition-all hover:opacity-75'><Image src={shuffle} alt="shuffle button" width={"16px"} height={"16px"}/></button>
+                <button className='transition-all hover:opacity-75'><Image src={skip_backward} alt="skip backward button" width={"16px"} height={"16px"}/></button>
                 {play_pause_button()}
-                <button className='transition-all hover:opacity-75'><Image src={skip_forward} width={"16px"} height={"16px"}/></button>
+                <button className='transition-all hover:opacity-75'><Image src={skip_forward} alt="skip forward button" width={"16px"} height={"16px"}/></button>
                 <input onChange={event => setVolume(event.target.value)} className="rounded-lg appearance-none bg-neutral-200 h-1 w-20 cursor-pointer accent-neutral-600 hover:accent-neutral-500 transition-all" type="range" min="0" max="100"/>
             </div>
             <div className='flex flex-row items-center justify-center'>
