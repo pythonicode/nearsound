@@ -2,8 +2,10 @@
 import '@fontsource/inter/variable.css';
 import '../styles/globals.css'
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+import { NearProvider } from '../context/NearProvider';
+
+function Application({ Component, pageProps }) {
+  return <NearProvider><Component {...pageProps} /></NearProvider>
 }
 
-export default MyApp
+export default Application
