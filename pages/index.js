@@ -2,6 +2,7 @@ import { useRouter } from "next/router"
 import Image from "next/image";
 import Particles from "react-tsparticles";
 import Head from "next/head";
+import NearLogo from "../components/NearLogo";
 
 import { useNear } from "../context/NearProvider";
 import { useEffect, useState } from "react";
@@ -98,7 +99,7 @@ export default function Home() {
         <h1 className="font-black text-5xl sm:text-6xl lg:text-8xl">Nearsound.</h1>
         <h3 className="font-extralight text-lg sm:text-xl lg:text-2xl">Decentralized Music Protocol</h3>
         <button onClick={connect_to_near} className='flex flex-row gap-2 items-center justify-center text-xl border border-neutral-700 py-4 px-8 mt-8 rounded hover:border-white transition-all'>
-          <Image src="/../public/near-logo.png" width={"20px"} height={"20px"}/> <code>/connect</code>
+          <NearLogo/> <code>/explore</code>
         </button>
       </div>
     </motion.main>
