@@ -75,7 +75,7 @@ export default function Account() {
           </CardContent>
         </Card>
       </div>
-      <Player/>
+      <Player currentlyPlaying={sound}/>
     </main>
   )
 }
