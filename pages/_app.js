@@ -6,7 +6,6 @@ import { NearProvider } from '../context/NearProvider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Application({ Component, pageProps }) {
-
   const theme = createTheme({
     palette: {
       mode: 'dark',
