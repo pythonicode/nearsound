@@ -30,17 +30,11 @@ const fancyTime = (duration) => {
     return ret;
 }
 
-export default function Player() {
+export default function Player({currentlyPlaying}) {
 
     const [ playing, setPlaying ] = useState(false);
     const [ repeat, setRepeat ] = useState('none');
     const [ rotation, setRotation ] = useState(0);
-
-    const [ sound, setSound ] = useState(new Howl({
-        src: ['https://bafybeia7xboj3uiveowv5knlrh47sjeyylmftqazkri3mcqa7xix5x6leu.ipfs.dweb.link/'],
-        html5: true
-    }));
-
     const [ volume, setVolume ] = useState(50);
 
     const [ song, setSong ] = useState({
@@ -49,28 +43,28 @@ export default function Player() {
         title: "Pink Soldiers"
     });
 
-    const [ seek, setSeek ] = useState(sound.seek());
-    const [ duration, setDuration ] = useState(sound.duration());
+    const [ seek, setSeek ] = useState(currentlyPlaying.seek());
+    const [ duration, setDuration ] = useState(currentlyPlaying.duration());
 
     useEffect(() => {
         const stop = setInterval(() => {
-            setSeek(sound.seek());
+            setSeek(currentlyPlaying.seek());
+            setDuration(currentlyPlaying.duration());
         }, 100);
-        setDuration(sound.duration());
         return stop;
-    }, [sound]);
+    }, [currentlyPlaying]);
 
     useEffect(() => {
         Howler.volume(volume/100);
     }, [volume]);
     
     const play_music = () => {
-        sound.play();
+        currentlyPlaying.play();
         setPlaying(true);
     }
 
     const pause_music = () => {
-        sound.pause();
+        currentlyPlaying.pause();
         setPlaying(false);
     }
 
@@ -95,8 +89,14 @@ export default function Player() {
         setRotation(rotation + 360);
     }
 
+    const variants = {
+        hidden: { y: 300 },
+        enter: { y: 0 },
+        exit: { y: 300 },
+    } 
+
     return (
-        <footer className='w-full flex flex-col items-center justify-center py-4 h-32 gap-2 border-t-4 border-double border-dark-100'>
+        <motion.footer variants={variants} initial="hidden" animate="enter" exit="exit" transition={{ duration: 1 }} className='w-full flex flex-col items-center justify-center py-4 h-32 gap-2 border-t-4 border-double border-dark-100'>
             <div className='flex flex-row items-center justify-center gap-2'>
                 <button onClick={update_repeat} className='transition-all hover:opacity-75'>{repeat_icon()}</button>
                 <motion.button onClick={shuffle} animate={{ rotate: rotation }} className='transition-all hover:opacity-75'><ShuffleIcon/></motion.button>
@@ -107,10 +107,10 @@ export default function Player() {
             </div>
             <div className='flex flex-row items-center justify-center'>
                 <div className='text-xs text-light text-neutral-400 mr-2'>{fancyTime(seek)}</div>
-                <div className='w-80 h-1'><div className="bg-neutral-400 h-1" style={{width: seek*100/sound.duration() + "%"}}></div></div>
-                <div className='text-xs text-light text-neutral-400 ml-2'>{fancyTime(sound.duration())}</div>
+                <div className='w-80 h-1'><div className="bg-neutral-400 h-1" style={{width: seek*100/duration + "%"}}></div></div>
+                <div className='text-xs text-light text-neutral-400 ml-2'>{fancyTime(duration)}</div>
             </div>
             <div className='text-xs text-light text-neutral-400'>{song.title} by {song.author}</div>
-        </footer>
+        </motion.footer>
     )
 }

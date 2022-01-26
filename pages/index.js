@@ -1,9 +1,7 @@
 import { useRouter } from "next/router"
 import Image from "next/image";
 import Particles from "react-tsparticles";
-
-import landing from '../public/landing.gif';
-import near_logo from "../public/near-logo.png"
+import Head from "next/head";
 
 import { useNear } from "../context/NearProvider";
 import { useEffect, useState } from "react";
@@ -90,12 +88,17 @@ export default function Home() {
           }}
         />
       </div>
+      <Head>
+        <title>Nearsound | Listen Now</title>
+        <meta name="description" content="A platform for listening and distributing music." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <div className="absolute flex flex-col items-center justify-center gap-2 w-screen h-screen max-w-screen max-h-screen top-0 left-0 z-10">
-        <Image src={landing} width={"225px"} height={"225px"}/>
+        <Image src='/../public/landing.gif' width={"225px"} height={"225px"}/>
         <h1 className="font-black text-5xl sm:text-6xl lg:text-8xl">Nearsound.</h1>
         <h3 className="font-extralight text-lg sm:text-xl lg:text-2xl">Decentralized Music Protocol</h3>
         <button onClick={connect_to_near} className='flex flex-row gap-2 items-center justify-center text-xl border border-neutral-700 py-4 px-8 mt-8 rounded hover:border-white transition-all'>
-          <Image src={near_logo} width={"20px"} height={"20px"}/> <code>/connect</code>
+          <Image src="/../public/near-logo.png" width={"20px"} height={"20px"}/> <code>/connect</code>
         </button>
       </div>
     </motion.main>
