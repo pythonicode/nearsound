@@ -13,6 +13,7 @@ body {
   color: white;
   background-color: #1A1A1A;
   overflow:hidden;
+  scrollbar-color: rgb(1, 1, 1) rgb(110, 110, 110);
   /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
 }
@@ -24,4 +25,22 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #202020;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
 }

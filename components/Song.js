@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import PauseIcon from '@mui/icons-material/Pause';
 import { useState } from 'react';
 
@@ -29,7 +29,7 @@ export default function Song({image, title, artist, features, onPlay, onPause, o
     }
 
     return (
-        <Card variant="outlined">
+        <Card sx={{width: 'clamp(200px, 256px, 300px)'}} variant="outlined">
             <CardMedia
                 component="img"
                 image={image}
@@ -37,26 +37,26 @@ export default function Song({image, title, artist, features, onPlay, onPause, o
                 alt="Album Cover"
             />
             <CardContent>
-                <div className='flex flex-row justify-between'>
-                    <div className='max-w-[18ch] whitespace-nowrap'>
-                        <h2>{title}</h2>
-                        <h3 className='text-sm text-neutral-400  overflow-hidden'>{artist} (ft. {build_features()})</h3>
+                <div className='flex flex-row justify-between w-full'>
+                    <div className='overflow-x-hidden whitespace-nowrap'>
+                        <h3>{title}</h3>
+                        <h5 className='text-xs text-neutral-400'>{artist} (ft. {build_features()})</h5>
                     </div>
-                    <CardActions>
-                        <IconButton onClick={onQueue} aria-label="delete">
-                            <PlaylistPlayIcon />
+                    <div className='flex flex-row'>
+                        <IconButton onClick={onQueue} size="small" aria-label="queue">
+                            <QueueMusicIcon/>
                         </IconButton>
-                        <IconButton  onClick={
+                        <IconButton size="small" onClick={
                             () => {
                                 setPlaying(!playing);
                                 if(!playing) onPlay();
                                 else onPause();
                             }
                         } 
-                        aria-label="delete">
+                        aria-label="play">
                             {play_button_icon()}
                         </IconButton>
-                    </CardActions>
+                    </div>
                 </div>
             </CardContent>
         </Card>

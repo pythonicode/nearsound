@@ -1,107 +1,56 @@
-import { useRouter } from "next/router"
-import Image from "next/image";
-import Particles from "react-tsparticles";
-import Head from "next/head";
-import NearLogo from "../components/NearLogo";
+// Components //
+import Head from 'next/head'
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import Player from '../components/Player';
+import Song from '../components/Song';
 
-import { useNear } from "../context/NearProvider";
+import Grid from '@mui/material/Grid';
+
+// Packages //
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useNear } from '../context/NearProvider';
+import { useRouter } from 'next/router';
+import { Pagination } from '@mui/material';
 
-export default function Home() {
-
-    const router = useRouter();
-    const { near, wallet } = useNear();
-    const [loaded, setLoaded] = useState(false);
-
-    const particlesInit = (main) => {
-      console.log(main); 
-      // you can initialize the tsParticles instance (main) here, adding custom shapes or presets
-    };
+export default function App() {
   
-    const particlesLoaded = (container) => {
-      console.log(container);
-      setLoaded(true);
-    };
+  const router = useRouter();
+  const { near, wallet } = useNear();
+  const [ show, showPage ] = useState(false);
 
-    const connect_to_near = () => {
-      if(wallet === undefined) alert("Problem connecting to NEAR. Do you have Javascript installed?")
-      else if(wallet.isSignedIn()) router.push('/listen');
-      else {
-        wallet.requestSignIn(
-          "example-contract.testnet", // contract requesting access
-          "NearSound", // optional
-        )
-      }
-  };
+  const [ sound, setSound ] = useState(new Howl({
+    src: ['https://bafybeia7xboj3uiveowv5knlrh47sjeyylmftqazkri3mcqa7xix5x6leu.ipfs.dweb.link/'],
+    html5: true
+  }));
 
-  const variants = {
-    hidden: { opacity: 0 },
-    enter: { opacity: 1 },
-    exit: { opacity: 0 },
-  } 
+  useEffect(() => {
+    if(wallet === undefined) return;
+    else if(!wallet.isSignedIn()) router.replace('/home');
+    else showPage(true);
+  }, [wallet]);
+
+  if(!show) return <main className='"flex flex-col w-screen h-screen max-w-screen max-h-screen text-white bg-dark"'></main>
 
   return (
-    <motion.main variants={variants} initial="hidden" animate="enter" exit="exit" transition={{ duration: 3 }} className="flex flex-col items-center justify-center gap-2 w-screen h-screen max-w-screen max-h-screen text-white bg-dark">
-      <div className="absolute w-full h-full top-0 left-0">
-        <Particles
-          id="tsparticles"
-          init={particlesInit}
-          loaded={particlesLoaded}
-          options={{
-            background: {
-              color: {
-                value: "#121212",
-              },
-            },
-            fpsLimit: 60,
-            particles: {
-              color: {
-                value: "#ffffff",
-              },
-              move: {
-                direction: "none",
-                enable: true,
-                outMode: "bounce",
-                random: true,
-                speed: 1,
-                straight: false,
-              },
-              number: {
-                density: {
-                  enable: true,
-                  area: 800,
-                },
-                value: 50,
-              },
-              opacity: {
-                value: 0.5,
-              },
-              shape: {
-                type: "circle",
-              },
-              size: {
-                random: true,
-                value: 5,
-              },
-            },
-            detectRetina: false,
-          }}
-        />
-      </div>
+    <main className="flex flex-col w-screen h-screen max-w-screen max-h-screen text-white bg-dark">
       <Head>
         <title>Nearsound | Listen Now</title>
         <meta name="description" content="A platform for listening and distributing music." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="absolute flex flex-col items-center justify-center gap-2 w-screen h-screen max-w-screen max-h-screen top-0 left-0 z-10">
-        <Image src='/../public/landing.gif' width={"225px"} height={"225px"}/>
-        <h1 className="font-black text-5xl sm:text-6xl lg:text-8xl">Nearsound.</h1>
-        <h3 className="font-extralight text-lg sm:text-xl lg:text-2xl">Decentralized Music Protocol</h3>
-        <button onClick={connect_to_near} className='flex flex-row gap-2 items-center justify-center text-xl border border-neutral-700 py-4 px-8 mt-8 rounded hover:border-white transition-all'>
-          <NearLogo/> <code>/explore</code>
-        </button>
+      <Header/> 
+      <div id="content" className='flex flex-row flex-wrap w-full h-full max-cols-4 items-start justify-start p-8 gap-4 overflow-y-scroll'>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
       </div>
-    </motion.main>
+      {/* <Pagination count={10} size="small"/> */}
+      <Player currentlyPlaying={sound}/>
+    </main>
   )
 }
