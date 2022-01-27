@@ -1,5 +1,4 @@
-import { Howler, Howl } from 'howler';
-import Image from 'next/image';
+import { Howler } from 'howler';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -11,6 +10,8 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import RepeatOnIcon from '@mui/icons-material/RepeatOn';
 import RepeatOneOnIcon from '@mui/icons-material/RepeatOneOn';
+
+import { useSound } from '../context/SoundProvider';
 
 const fancyTime = (duration) => {   
     // Hours, minutes and seconds
@@ -32,39 +33,35 @@ const fancyTime = (duration) => {
 
 export default function Player({currentlyPlaying}) {
 
+    const { song, queue } = useSound();
+
     const [ playing, setPlaying ] = useState(false);
     const [ repeat, setRepeat ] = useState('none');
     const [ rotation, setRotation ] = useState(0);
     const [ volume, setVolume ] = useState(50);
 
-    const [ song, setSong ] = useState({
-        author: "Unknown Artist",
-        featuring: [],
-        title: "Pink Soldiers"
-    });
-
-    const [ seek, setSeek ] = useState(currentlyPlaying.seek());
-    const [ duration, setDuration ] = useState(currentlyPlaying.duration());
+    const [ seek, setSeek ] = useState(song.audio.seek());
+    const [ duration, setDuration ] = useState(song.audio.duration());
 
     useEffect(() => {
         const stop = setInterval(() => {
-            setSeek(currentlyPlaying.seek());
-            setDuration(currentlyPlaying.duration());
+            setSeek(song.audio.seek());
+            setDuration(song.audio.duration());
         }, 100);
         return stop;
-    }, [currentlyPlaying]);
+    }, [song.audio]);
 
     useEffect(() => {
         Howler.volume(volume/100);
     }, [volume]);
     
     const play_music = () => {
-        currentlyPlaying.play();
+        song.audio.play();
         setPlaying(true);
     }
 
     const pause_music = () => {
-        currentlyPlaying.pause();
+        song.audio.pause();
         setPlaying(false);
     }
 
@@ -110,7 +107,7 @@ export default function Player({currentlyPlaying}) {
                 <div className='w-80 h-1'><div className="bg-neutral-400 h-1" style={{width: seek*100/duration + "%"}}></div></div>
                 <div className='text-xs text-light text-neutral-400 ml-2'>{fancyTime(duration)}</div>
             </div>
-            <div className='text-xs text-light text-neutral-400'>{song.title} by {song.author}</div>
+            <div className='text-xs text-light text-neutral-400'>{song.metadata.title} by {song.metadata.artist}</div>
         </motion.footer>
     )
 }

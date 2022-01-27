@@ -83,9 +83,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="absolute flex flex-col items-center justify-center gap-2 w-screen h-screen max-w-screen max-h-screen top-0 left-0 z-10">
-        {/* <Image src='/../public/landing.gif' width={"225px"} height={"225px"}/> */}
+        <Image src='/landing.gif' width={"225px"} height={"225px"}/>
         <h1 className="font-black text-5xl sm:text-6xl lg:text-8xl">Nearsound.</h1>
-        <h3 className="font-extralight text-lg sm:text-xl lg:text-2xl">Decentralized Music Protocol</h3>
+        <h3 className="font-extralight text-lg sm:text-xl lg:text-2xl">Decentralized High Definition Music</h3>
         <button onClick={()=> { router.replace('/'); }} className='flex flex-row gap-2 items-center justify-center text-xl border border-neutral-700 py-4 px-8 mt-8 rounded hover:border-white transition-all'>
           <NearLogo/> <code>/explore</code>
         </button>

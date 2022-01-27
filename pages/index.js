@@ -1,17 +1,13 @@
 // Components //
 import Head from 'next/head'
 import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 import Song from '../components/Song';
-
-import Grid from '@mui/material/Grid';
 
 // Packages //
 import { useEffect, useState } from "react";
 import { useNear } from '../context/NearProvider';
 import { useRouter } from 'next/router';
-import { Pagination } from '@mui/material';
 
 export default function App() {
   
@@ -19,10 +15,7 @@ export default function App() {
   const { near, wallet } = useNear();
   const [ show, showPage ] = useState(false);
 
-  const [ sound, setSound ] = useState(new Howl({
-    src: ['https://bafybeia7xboj3uiveowv5knlrh47sjeyylmftqazkri3mcqa7xix5x6leu.ipfs.dweb.link/'],
-    html5: true
-  }));
+  const [ sound, setSound ] = useState();
 
   useEffect(() => {
     if(wallet === undefined) return;
@@ -50,7 +43,7 @@ export default function App() {
       <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
       </div>
       {/* <Pagination count={10} size="small"/> */}
-      <Player currentlyPlaying={sound}/>
+      <Player/>
     </main>
   )
 }

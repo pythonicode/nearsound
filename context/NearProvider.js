@@ -1,4 +1,3 @@
-
 // Packages //
 import { useState, useEffect, useContext, createContext } from "react";
 import { keyStores, connect, WalletConnection } from 'near-api-js';
@@ -27,7 +26,7 @@ export function NearProvider({ children }) {
         const wallet_connection = new WalletConnection(near_connection);
         setNear(near_connection);
         setWallet(wallet_connection);
-    },[])
+    }, []);
 
     const context = {
         near,
