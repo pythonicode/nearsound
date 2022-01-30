@@ -1,4 +1,3 @@
-
 // Packages //
 import { useState, useEffect, useContext, createContext } from "react";
 import { Howl } from "howler";
@@ -27,8 +26,6 @@ export function Song(src, artwork, title, artist, featured, created=Date.now()) 
 
 export function SoundProvider({ children }) {
 
-    
-
     const [ song, setSong ] = useState(
         Song(
             'https://bafybeia7xboj3uiveowv5knlrh47sjeyylmftqazkri3mcqa7xix5x6leu.ipfs.dweb.link/',
@@ -37,7 +34,13 @@ export function SoundProvider({ children }) {
             'Unknown Artist',
             [],
     ));
-    const [ queue, updateQueue ] = useState([]);
+    const [ queue, updateQueue ] = useState([Song(
+        'https://bafybeia7xboj3uiveowv5knlrh47sjeyylmftqazkri3mcqa7xix5x6leu.ipfs.dweb.link/',
+        'https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg',
+        'Pink Soldiers',
+        'Unknown Artist',
+        [],
+    )]);
 
     const context = {
         song,

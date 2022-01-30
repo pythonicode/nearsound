@@ -2,6 +2,10 @@ import { Howler } from 'howler';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+import DrawerContent from './DrawerContent';
+
+import { Button, Drawer } from '@mui/material';
+
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
@@ -33,15 +37,16 @@ const fancyTime = (duration) => {
 
 export default function Player({currentlyPlaying}) {
 
-    const { song, queue } = useSound();
+    const { song, setSong, queue, updateQueue } = useSound();
 
     const [ playing, setPlaying ] = useState(false);
     const [ repeat, setRepeat ] = useState('none');
     const [ rotation, setRotation ] = useState(0);
     const [ volume, setVolume ] = useState(50);
-
     const [ seek, setSeek ] = useState(song.audio.seek());
     const [ duration, setDuration ] = useState(song.audio.duration());
+
+    const [ open, setOpen ] = useState(false);
 
     useEffect(() => {
         const stop = setInterval(() => {
@@ -90,17 +95,22 @@ export default function Player({currentlyPlaying}) {
         hidden: { y: 300 },
         enter: { y: 0 },
         exit: { y: 300 },
-    } 
+    }
 
     return (
         <motion.footer variants={variants} initial="hidden" animate="enter" exit="exit" transition={{ duration: 1 }} className='w-full flex flex-col items-center justify-center py-4 h-32 gap-2 border-t-4 border-double border-dark-100'>
+            <Drawer open={open} onClose={() => { setOpen(false); }}>
+                <DrawerContent queue={queue}/>
+            </Drawer>
             <div className='flex flex-row items-center justify-center gap-2'>
+                <Button onClick={()=>{setOpen(true);}} variant="text">OPEN QUEUE</Button>
                 <button onClick={update_repeat} className='transition-all hover:opacity-75'>{repeat_icon()}</button>
                 <motion.button onClick={shuffle} animate={{ rotate: rotation }} className='transition-all hover:opacity-75'><ShuffleIcon/></motion.button>
                 <button className='transition-all hover:opacity-75'><SkipPreviousIcon/></button>
                 {play_pause_button()}
                 <button className='transition-all hover:opacity-75'><SkipNextIcon/></button>
                 <input onChange={event => setVolume(event.target.value)} className="rounded-lg appearance-none bg-white h-1 w-16 cursor-pointer transition-all" type="range" min="0" max="100"/>
+                <Button variant="text">TIP ARTIST</Button>
             </div>
             <div className='flex flex-row items-center justify-center'>
                 <div className='text-xs text-light text-neutral-400 mr-2'>{fancyTime(seek)}</div>

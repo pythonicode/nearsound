@@ -34,13 +34,13 @@ export default function App() {
       </Head>
       <Header/> 
       <div id="content" className='flex flex-row flex-wrap w-full h-full max-cols-4 items-start justify-start p-8 gap-4 overflow-y-scroll'>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
-      <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
+        <Song image="https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg" title="Song Title" artist="Some Artist" features={['dude', 'other dude']}/>
       </div>
       {/* <Pagination count={10} size="small"/> */}
       <Player/>

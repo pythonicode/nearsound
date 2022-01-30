@@ -2,6 +2,7 @@ import { Autocomplete, TextField, Button, Skeleton, Stack, styled } from "@mui/m
 import Header from "../components/Header";
 import Player from "../components/Player";
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import CheckIcon from '@mui/icons-material/Check';
 import { useState } from "react";
 
 const Input = styled('input')({
@@ -25,14 +26,27 @@ export default function Mint() {
     ];
 
     const [ artwork, setArtwork ] = useState(null);
-    const [ audiot, setAudio ] = useState(null);
+    const [ audio, setAudio ] = useState(null);
+    const [ audioFileName, setAudioFileName ] = useState(null);
+
+    const onAudioUpload = (event) => {
+        if(event.target.files[0] === null || event.target.files[0] === undefined) return;
+        setAudioFileName(event.target.files[0].name);
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onerror = () => { return false; } 
+        reader.onloadend = () => {
+            console.log(reader.result);
+            setAudio(reader.result);
+        }
+    }
 
     const onArtworkUpload  = (event) => {
         if(event.target.files[0] === null || event.target.files[0] === undefined) return;
         const reader = new FileReader();
         reader.readAsDataURL(event.target.files[0]);
         reader.onerror = () => { return false; } 
-        reader.onloadend = function() {
+        reader.onloadend = () => {
             let image = new Image();
             image.src = reader.result;
             image.onload = () => {
@@ -44,7 +58,11 @@ export default function Mint() {
                 return true;
             }
         }
-        
+    }
+
+    const audio_upload_content = () => {
+        if(audio === null) return <><MusicNoteIcon/> Upload Audio</>
+        else return <><CheckIcon/> {audioFileName}</>
     }
 
     const artwork_upload_content = () => {
@@ -63,11 +81,12 @@ export default function Mint() {
             <Header/>
             <form className="flex flex-col w-[500px] p-8 gap-4 h-full overflow-y-scroll">
                 <h1 className="text-3xl font-bold mb-4">Mint Your Song</h1>
-                <label htmlFor="contained-button-file" className="w-full">
-                    <Input accept=".wav" id="contained-button-file" multiple type="file" />
+                <label htmlFor="audio-file" className="w-full">
+                    <Input accept=".wav" id="audio-file" multiple type="file" onChange={onAudioUpload}/>
                     <Button variant="contained" component="span" fullWidth>
-                        <MusicNoteIcon/> Upload Audio (.wav)
+                        {audio_upload_content()}
                     </Button>
+                    <div className="text-center text-xs text-neutral-400 p-2">Must be <code>.wav</code> format. Limit <code>100mb</code>.</div>
                 </label>
                 <p></p>
                 <TextField label="Title" variant="outlined" />
@@ -79,8 +98,8 @@ export default function Mint() {
                     renderInput={(params) => <TextField {...params} label="Featured Artists" helperText="Press 'enter' to add multiple artists."/>}
                 />
                 <h3 className="text-xl">Upload Artwork (min. 300x300)</h3>
-                <label htmlFor="contained-button-file">
-                    <Input accept="image/*" id="contained-button-file" type="file" onChange={onArtworkUpload}/>
+                <label htmlFor="art-file">
+                    <Input accept="image/*" id="art-file" type="file" onChange={onArtworkUpload}/>
                     <Button variant="outline" component="span">
                         {artwork_upload_content()}
                     </Button>
