@@ -14,6 +14,8 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import RepeatOnIcon from '@mui/icons-material/RepeatOn';
 import RepeatOneOnIcon from '@mui/icons-material/RepeatOneOn';
+import SavingsIcon from '@mui/icons-material/Savings';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 
 import { useSound } from '../context/SoundProvider';
 
@@ -35,11 +37,20 @@ const fancyTime = (duration) => {
     return ret;
 }
 
+const build_features = (features) => {
+    let str = "";
+    if(features === undefined || features === null || features.length === 0) return str;
+    features.forEach(feature => {
+        str += feature + ", "
+    });
+    str = str.slice(0, -2); 
+    return "(ft. " + str + ")";
+}
+
 export default function Player({currentlyPlaying}) {
 
-    const { song, setSong, queue, updateQueue } = useSound();
+    const { song, queue, playing, toggle } = useSound();
 
-    const [ playing, setPlaying ] = useState(false);
     const [ repeat, setRepeat ] = useState('none');
     const [ rotation, setRotation ] = useState(0);
     const [ volume, setVolume ] = useState(50);
@@ -71,8 +82,8 @@ export default function Player({currentlyPlaying}) {
     }
 
     const play_pause_button = () => {
-        if(playing) return <button className='transition-all hover:opacity-75' onClick={pause_music}><PauseCircleOutlineIcon fontSize="large"/></button>
-        else return <button className='transition-all hover:opacity-75' onClick={play_music}><PlayCircleOutlineIcon fontSize="large"/></button>
+        if(playing) return <PauseCircleOutlineIcon fontSize="large"/>
+        else return <PlayCircleOutlineIcon fontSize="large"/>
     }
 
     const repeat_icon = () => {
@@ -103,21 +114,21 @@ export default function Player({currentlyPlaying}) {
                 <DrawerContent queue={queue}/>
             </Drawer>
             <div className='flex flex-row items-center justify-center gap-2'>
-                <Button onClick={()=>{setOpen(true);}} variant="text">OPEN QUEUE</Button>
+                <Button onClick={()=>{setOpen(true);}} variant="text"><QueueMusicIcon sx={{marginRight: "8px"}}/> QUEUE</Button>
                 <button onClick={update_repeat} className='transition-all hover:opacity-75'>{repeat_icon()}</button>
                 <motion.button onClick={shuffle} animate={{ rotate: rotation }} className='transition-all hover:opacity-75'><ShuffleIcon/></motion.button>
                 <button className='transition-all hover:opacity-75'><SkipPreviousIcon/></button>
-                {play_pause_button()}
+                <button className='transition-all hover:opacity-75' onClick={toggle}>{play_pause_button()}</button>
                 <button className='transition-all hover:opacity-75'><SkipNextIcon/></button>
-                <input onChange={event => setVolume(event.target.value)} className="rounded-lg appearance-none bg-white h-1 w-16 cursor-pointer transition-all" type="range" min="0" max="100"/>
-                <Button variant="text">TIP ARTIST</Button>
+                <input onChange={event => setVolume(event.target.value)} className="rounded-lg appearance-none bg-white h-1 w-20 cursor-pointer transition-all" type="range" min="0" max="100"/>
+                <Button variant="text"><SavingsIcon sx={{marginRight: "8px"}}/> TIP</Button>
             </div>
             <div className='flex flex-row items-center justify-center'>
                 <div className='text-xs text-light text-neutral-400 mr-2'>{fancyTime(seek)}</div>
                 <div className='w-80 h-1'><div className="bg-neutral-400 h-1" style={{width: seek*100/duration + "%"}}></div></div>
                 <div className='text-xs text-light text-neutral-400 ml-2'>{fancyTime(duration)}</div>
             </div>
-            <div className='text-xs text-light text-neutral-400'>{song.metadata.title} by {song.metadata.artist}</div>
+            <div className='text-xs text-light text-neutral-400'>{song.metadata.title} by {song.metadata.artist} {build_features(song.metadata.featured)}</div>
         </motion.footer>
     )
 }

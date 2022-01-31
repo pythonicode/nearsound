@@ -75,11 +75,15 @@ export default function Mint() {
         )
         else return <div className="w-80 h-80 overflow-hidden"><img className="object-center object-cover" src={artwork} alt="Song Artwork"/></div>
     }
+    
+    const validate_and_mint = () => {
+
+    }
 
     return (
         <main className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen text-white bg-dark">
             <Header/>
-            <form className="flex flex-col w-[500px] p-8 gap-4 h-full overflow-y-scroll">
+            <form onSubmit={validate_and_mint} className="flex flex-col w-[500px] p-8 gap-4 h-full overflow-y-scroll">
                 <h1 className="text-3xl font-bold mb-4">Mint Your Song</h1>
                 <label htmlFor="audio-file" className="w-full">
                     <Input accept=".wav" id="audio-file" multiple type="file" onChange={onAudioUpload}/>
@@ -88,7 +92,6 @@ export default function Mint() {
                     </Button>
                     <div className="text-center text-xs text-neutral-400 p-2">Must be <code>.wav</code> format. Limit <code>100mb</code>.</div>
                 </label>
-                <p></p>
                 <TextField label="Title" variant="outlined" />
                 <TextField label="Artist Name" variant="outlined" />
                 <Autocomplete

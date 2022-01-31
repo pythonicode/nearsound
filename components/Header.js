@@ -1,8 +1,6 @@
-
-
 // Packages //
 import { motion } from "framer-motion";
-import { Button } from "@mui/material";
+import { Button, Autocomplete, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import HeaderAction from "./HeaderAction";
 
@@ -20,7 +18,12 @@ export default function Header() {
             </div>
             <div className="flex flex-row grow items-center justify-center">
                 <form className="flex flex-row items-center justify-center gap-4">
-                    <input type="text" className="border border-neutral-700 px-3 py-1 rounded bg-dark text-xl" placeholder="Search For Music..."></input>
+                    <Autocomplete
+                        disablePortal
+                        options={['Nothing yet.']}
+                        sx={{width: "300px"}}
+                        renderInput={(params) => <TextField {...params} label="Search" />}
+                    />
                     <Button><SearchIcon/>Search</Button>
                 </form>
             </div>

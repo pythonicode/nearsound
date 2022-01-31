@@ -29,11 +29,13 @@ a {
 
 /* custom scrollbar */
 ::-webkit-scrollbar {
+  border-left:#333333 solid 1px;
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
   background-color: transparent;
+  
   border-radius: 20px;
 }
 
