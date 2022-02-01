@@ -27,6 +27,7 @@ export default function DrawerContent() {
 
     return (
         <div className='flex flex-col w-80 h-full bg-dark border-r-2 border-dark-200 overflow-y-scroll'>
+            <h3 className="pt-4 px-4 text-xl font-bold">Now Playing</h3>
             <div className="flex flex-row items-center justify-start w-full h-20 border-b-4 border-double border-dark-200 p-4 gap-4">
                 <img src={song.artwork} alt="Song Artwork" className="w-12 h-12 object-cover"/>
                 <div className="flex flex-col grow overflow-x-hidden whitespace-nowrap">

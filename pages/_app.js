@@ -14,7 +14,17 @@ function Application({ Component, pageProps }) {
     },
   });
 
-  return <FirebaseProvider><NearProvider><SoundProvider><ThemeProvider theme={theme}><Component {...pageProps} /></ThemeProvider></SoundProvider></NearProvider></FirebaseProvider>
+  return (
+    <FirebaseProvider>
+      <NearProvider>
+        <SoundProvider>
+          <ThemeProvider theme={theme}>
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </SoundProvider>
+      </NearProvider>
+    </FirebaseProvider>
+  )
 }
 
 export default Application
