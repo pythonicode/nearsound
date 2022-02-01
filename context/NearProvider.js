@@ -11,6 +11,7 @@ export function useNear() {
 export function NearProvider({ children }) {
   const [near, setNear] = useState(undefined);
   const [wallet, setWallet] = useState(undefined);
+  const [redirect, setRedirect] = useState(true);
 
   useEffect(async () => {
     const config = {
@@ -30,6 +31,8 @@ export function NearProvider({ children }) {
   const context = {
     near,
     wallet,
+    redirect,
+    setRedirect,
   };
 
   return (

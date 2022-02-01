@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function Home() {
+  const { setRedirect } = useNear();
   const router = useRouter();
   const [loaded, setLoaded] = useState(false);
 
@@ -92,7 +93,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="absolute flex flex-col items-center justify-center gap-2 w-screen h-screen max-w-screen max-h-screen top-0 left-0 z-10">
-        <Image src="/landing.gif" width={"225px"} height={"225px"} />
+        <img
+          className="w-64 h-64"
+          src="/landing.gif"
+          alt="Spinning White Fire GIF"
+        />
         <h1 className="font-black text-5xl sm:text-6xl lg:text-8xl">
           Nearsound.
         </h1>
@@ -101,7 +106,8 @@ export default function Home() {
         </h3>
         <button
           onClick={() => {
-            router.replace("/");
+            setRedirect(false);
+            router.push("/");
           }}
           className="flex flex-row gap-2 items-center justify-center text-xl border border-neutral-700 py-4 px-8 mt-8 rounded hover:border-white transition-all"
         >

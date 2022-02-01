@@ -10,22 +10,24 @@ import { useNear } from "../context/NearProvider";
 import { useRouter } from "next/router";
 
 export default function App() {
-  const router = useRouter();
-  const { near, wallet } = useNear();
-  const [show, showPage] = useState(false);
+  const { near, wallet, redirect, setRedirect } = useNear();
 
+  const router = useRouter();
+
+  const [show, showPage] = useState(false);
   const [sound, setSound] = useState();
 
   useEffect(() => {
-    if (wallet === undefined) return;
-    else if (!wallet.isSignedIn()) router.replace("/home");
+    if (wallet === undefined || wallet === null) return;
+    if (redirect && !wallet.isSignedIn()) router.replace("/home");
     else showPage(true);
   }, [wallet]);
 
-  if (!show)
+  if (!show) {
     return (
-      <main className='"flex flex-col w-screen h-screen max-w-screen max-h-screen text-white bg-dark"'></main>
+      <main className="flex flex-col w-screen h-screen max-w-screen max-h-screen text-white bg-dark" />
     );
+  }
 
   return (
     <main className="flex flex-col w-screen h-screen max-w-screen max-h-screen text-white bg-dark">
