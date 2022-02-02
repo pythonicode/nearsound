@@ -7,7 +7,7 @@ import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 
 import { Snackbar, Alert } from "@mui/material";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Song, useSound } from "../context/SoundProvider";
 
 const build_features = (features) => {
@@ -21,26 +21,31 @@ const build_features = (features) => {
   return "(ft. " + str + ")";
 };
 
-export default function SongCard({ src, image, title, artist, featured }) {
-  const { setSong, addToQueue } = useSound();
+export default function SongCard({ song }) {
+  const { setSong, addToQueue, stopAll } = useSound();
   const [snackbar, setSnackbar] = useState(false);
 
   return (
     <>
       <Card sx={{ width: "256px" }} variant="outlined">
-        <img className="object-cover w-64 h-64" src={image} alt="Song Image" />
+        <img
+          className="object-cover w-64 h-64"
+          src={song.artwork}
+          alt="Song Art"
+        />
         <CardContent>
           <div className="flex flex-row justify-between w-full">
             <div className="overflow-x-hidden whitespace-nowrap">
-              <h3>{title}</h3>
+              <h3>{song.title}</h3>
               <h5 className="text-xs text-neutral-400">
-                {artist} {build_features(featured)}
+                {song.artist} {build_features(song.featured)}
               </h5>
             </div>
             <div className="flex flex-row">
               <IconButton
                 onClick={() => {
-                  addToQueue(Song(src, image, title, artist, featured));
+                  song.audio.load();
+                  addToQueue(song);
                   setSnackbar(true);
                 }}
                 size="small"
@@ -51,8 +56,10 @@ export default function SongCard({ src, image, title, artist, featured }) {
               <IconButton
                 size="small"
                 onClick={() => {
-                  const song = Song(src, image, title, artist, featured);
+                  stopAll();
+                  song.audio.load();
                   setSong(song);
+                  song.audio.play();
                 }}
                 aria-label="play"
               >
@@ -70,7 +77,7 @@ export default function SongCard({ src, image, title, artist, featured }) {
         }}
       >
         <Alert severity="success" color="info">
-          Added <span className="font-bold">{title}</span> to queue!
+          Added <span className="font-bold">{song.title}</span> to queue!
         </Alert>
       </Snackbar>
     </>

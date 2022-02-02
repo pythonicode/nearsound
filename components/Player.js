@@ -49,23 +49,13 @@ const build_features = (features) => {
 };
 
 export default function Player({ currentlyPlaying }) {
-  const { song, queue, playing, toggle } = useSound();
+  const { song, queue, playing, toggle, seek, duration } = useSound();
 
   const [repeat, setRepeat] = useState("none");
   const [rotation, setRotation] = useState(0);
   const [volume, setVolume] = useState(50);
-  const [seek, setSeek] = useState(song.audio.seek());
-  const [duration, setDuration] = useState(song.audio.duration());
 
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const stop = setInterval(() => {
-      setSeek(song.audio.seek());
-      setDuration(song.audio.duration());
-    }, 100);
-    return stop;
-  }, [song.audio]);
 
   useEffect(() => {
     Howler.volume(volume / 100);
@@ -182,8 +172,7 @@ export default function Player({ currentlyPlaying }) {
         </div>
       </div>
       <div className="text-xs text-light text-neutral-400">
-        {song.metadata.title} by {song.metadata.artist}{" "}
-        {build_features(song.metadata.featured)}
+        {song.title} by {song.artist} {build_features(song.featured)}
       </div>
     </motion.footer>
   );
