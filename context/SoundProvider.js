@@ -24,6 +24,7 @@ export class Song {
 }
 
 export function SoundProvider({ children }) {
+  const refreshRate = 100;
   const [playing, setPlaying] = useState(false);
 
   const [song, updateSong] = useState(
@@ -39,7 +40,18 @@ export function SoundProvider({ children }) {
   const setSong = (song) => {
     song.audio.load();
     updateSong(song);
-    console.log(song);
+    setSeeking(
+      setInterval(() => {
+        setSeek(song.audio.seek());
+        setDuration(song.audio.duration());
+      }, refreshRate)
+    );
+    setPlaying(true);
+    console.log(song.audio);
+    console.log(song.audio.duration());
+    setDuration(song.audio.duration());
+    console.log(duration);
+    song.audio.play();
   };
 
   const [seek, setSeek] = useState(0);
@@ -47,38 +59,19 @@ export function SoundProvider({ children }) {
   const [queue, setQueue] = useState([]);
   const [seeking, setSeeking] = useState(0);
 
-  useEffect(() => {
-    song.audio.on("load", () => {
-      setDuration(song.audio.duration());
-    });
-
-    song.audio.on("play", () => {
-      setSeeking(
-        setInterval(() => {
-          setSeek(song.audio.seek());
-        }, 100)
-      );
-    });
-
-    song.audio.on("pause", () => {
-      clearInterval(seeking);
-    });
-
-    song.audio.on("stop", () => {
-      clearInterval(seeking);
-    });
-
-    song.audio.on("end", () => {
-      clearInterval(seeking);
-    });
-  }, [song]);
-
   const toggle = () => {
     if (song === undefined || song === null) return;
     if (playing) {
       song.audio.pause();
+      clearInterval(seeking);
       setPlaying(false);
     } else {
+      setSeeking(
+        setInterval(() => {
+          setSeek(song.audio.seek());
+          setDuration(song.audio.duration());
+        }, refreshRate)
+      );
       song.audio.play();
       setPlaying(true);
     }
@@ -104,6 +97,7 @@ export function SoundProvider({ children }) {
 
   const stopAll = () => {
     setPlaying(false);
+    clearInterval(seeking);
     Howler.stop();
   };
 

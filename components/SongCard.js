@@ -22,7 +22,7 @@ const build_features = (features) => {
 };
 
 export default function SongCard({ song }) {
-  const { setSong, addToQueue, stopAll } = useSound();
+  const { setSong, addToQueue, stopAll, toggle } = useSound();
   const [snackbar, setSnackbar] = useState(false);
 
   return (
@@ -57,9 +57,7 @@ export default function SongCard({ song }) {
                 size="small"
                 onClick={() => {
                   stopAll();
-                  song.audio.load();
                   setSong(song);
-                  song.audio.play();
                 }}
                 aria-label="play"
               >

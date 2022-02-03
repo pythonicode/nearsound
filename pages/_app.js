@@ -4,7 +4,7 @@ import "../styles/globals.css";
 
 import { NearProvider } from "../context/NearProvider";
 import { SoundProvider } from "../context/SoundProvider";
-import { FirebaseProvider } from "../context/FirebaseProvider";
+import { DatabaseProvider } from "../context/DatabaseProvider";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 function Application({ Component, pageProps }) {
@@ -15,7 +15,7 @@ function Application({ Component, pageProps }) {
   });
 
   return (
-    <FirebaseProvider>
+    <DatabaseProvider>
       <NearProvider>
         <SoundProvider>
           <ThemeProvider theme={theme}>
@@ -23,7 +23,7 @@ function Application({ Component, pageProps }) {
           </ThemeProvider>
         </SoundProvider>
       </NearProvider>
-    </FirebaseProvider>
+    </DatabaseProvider>
   );
 }
 

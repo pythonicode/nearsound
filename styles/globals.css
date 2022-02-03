@@ -13,7 +13,6 @@ body {
   color: white;
   background-color: #1a1a1a;
   overflow: hidden;
-  scrollbar-color: rgb(1, 1, 1) rgb(110, 110, 110);
   /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
 }
@@ -29,7 +28,6 @@ a {
 
 /* custom scrollbar */
 ::-webkit-scrollbar {
-  border-left: #333333 solid 1px;
   width: 12px;
 }
 

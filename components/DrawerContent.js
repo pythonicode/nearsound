@@ -36,9 +36,9 @@ export default function DrawerContent() {
           className="w-12 h-12 object-cover"
         />
         <div className="flex flex-col grow overflow-x-hidden whitespace-nowrap">
-          <h3>{song.metadata.title}</h3>
+          <h3>{song.title}</h3>
           <p className="text-neutral-500 text-xs">
-            {song.metadata.artist} {build_features(song.metadata.featured)}
+            {song.artist} {build_features(song.featured)}
           </p>
         </div>
         <button onClick={toggle}>{play_or_pause()}</button>
@@ -53,9 +53,9 @@ export default function DrawerContent() {
               className="w-12 h-12 object-cover"
             />
             <div className="flex flex-col grow overflow-x-hidden whitespace-nowrap">
-              <h3>{song.metadata.title}</h3>
+              <h3>{song.title}</h3>
               <p className="text-neutral-500 text-xs">
-                {song.metadata.artist} {build_features(song.metadata.featured)}
+                {song.artist} {build_features(song.featured)}
               </p>
             </div>
             <div className="cursor-pointer flex flex-col">
