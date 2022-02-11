@@ -11,6 +11,9 @@ function Application({ Component, pageProps }) {
   const theme = createTheme({
     palette: {
       mode: "dark",
+      neutral: {
+        main: "#FFFFFF",
+      },
     },
   });
 

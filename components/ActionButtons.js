@@ -16,12 +16,12 @@ export function MintSong({ onClick, roles }) {
   else return null;
 }
 
-export function CreateAd({ onClick, roles }) {
-  if (roles.includes("advertiser") || roles.includes("admin"))
+export function CreateArtist({ onClick, roles }) {
+  if (!roles.includes("artist")) {
     return (
       <ActionButton onClick={onClick} variant="outlined">
-        Create an Advertisement
+        Create Artist Account
       </ActionButton>
     );
-  else return null;
+  } else return null;
 }

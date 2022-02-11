@@ -2,7 +2,10 @@
 import { motion } from "framer-motion";
 import { Button, Autocomplete, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import HeaderAction from "./HeaderAction";
+import NearLogin from "./NearLogin";
+import NearAccount from "./NearAccount";
+import { useNear } from "../context/NearProvider";
+import { useRouter } from "next/router";
 
 const variants = {
   hidden: { y: -100 },
@@ -11,6 +14,14 @@ const variants = {
 };
 
 export default function Header() {
+  const router = useRouter();
+  const { signedIn } = useNear();
+
+  const action_button = () => {
+    if (!signedIn) return <NearLogin />;
+    return <NearAccount />;
+  };
+
   return (
     <motion.header
       variants={variants}
@@ -20,7 +31,12 @@ export default function Header() {
       transition={{ duration: 1 }}
       className="w-full flex flex-col sm:flex-row items-center justify-start p-4 gap-4 bg-dark border-b-2 border-dark-200"
     >
-      <div className="flex items-center justify-center gap-4 cursor-pointer select-none text-3xl">
+      <div
+        onClick={() => {
+          router.push("/");
+        }}
+        className="flex items-center justify-center gap-4 cursor-pointer select-none text-3xl"
+      >
         Nearsound
       </div>
       <div className="flex flex-row grow items-center justify-center">
@@ -37,7 +53,7 @@ export default function Header() {
           </Button>
         </form>
       </div>
-      <HeaderAction />
+      {action_button()}
     </motion.header>
   );
 }
