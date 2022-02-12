@@ -9,7 +9,14 @@ export function useSound() {
 }
 
 export class Song {
-  constructor(src, artwork, title, artist, featured, created = Date.now()) {
+  constructor(
+    src,
+    artwork,
+    title,
+    artist,
+    featured = [],
+    created = Date.now()
+  ) {
     this.audio = new Howl({
       src: [src],
       html5: true,

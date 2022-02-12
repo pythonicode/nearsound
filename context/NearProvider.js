@@ -15,9 +15,9 @@ export function useNear() {
 }
 
 export function NearProvider({ children }) {
-  const provider = new providers.JsonRpcProvider(
-    "https://archival-rpc.testnet.near.org"
-  );
+  const provider = new providers.JsonRpcProvider({
+    url: "https://archival-rpc.testnet.near.org",
+  });
 
   const [near, setNear] = useState(null);
   const [wallet, setWallet] = useState(null);

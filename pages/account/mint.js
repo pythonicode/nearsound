@@ -67,9 +67,6 @@ export default function Mint() {
   const [audioFileName, setAudioFileName] = useState(null);
   const [artworkURL, setArtworkURL] = useState(null);
 
-  const [audioCID, setAudioCID] = useState(null);
-  const [artworkCID, setArtworkCID] = useState(null);
-
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState([]);
 
@@ -166,12 +163,10 @@ export default function Mint() {
     const audio_cid = await client.storeBlob(audio);
     setLoadingText("Making progess...");
     const artwork_cid = await client.storeBlob(artwork);
-    setAudioCID(audio_cid);
-    setArtworkCID(artwork_cid);
     const metadata = {
       title: title,
-      audio: "https://ipfs.io/ipfs/" + audioCID,
-      media: "https://ipfs.io/ipfs/" + artworkCID,
+      audio: "https://ipfs.io/ipfs/" + audio_cid,
+      media: "https://ipfs.io/ipfs/" + artwork_cid,
     };
     setLoadingText("Almost Done! Hang in there.");
     await contract.nft_mint(
