@@ -22,9 +22,9 @@ import { CircularProgress } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useNear } from "../../context/NearProvider";
-import NearLogo from "../../components/NearLogo";
-import { LoadingButton } from "@mui/lab";
 import NearLogin from "../../components/NearLogin";
+
+import imageCompression from "browser-image-compression";
 
 const DEFAULT_TAGS = [
   "Rock",
@@ -44,6 +44,11 @@ const DEFAULT_TAGS = [
 const Input = styled("input")({
   display: "none",
 });
+
+const COMPRESSION_OPTIONS = {
+  maxSizeMB: 99, // 99 MB maximum
+  maxWidthOrHeight: 300, // width/height scaled down to 300px
+};
 
 export default function Mint() {
   const router = useRouter();
@@ -68,13 +73,23 @@ export default function Mint() {
   const [artworkURL, setArtworkURL] = useState(null);
 
   const [title, setTitle] = useState("");
+  const [featured, setFeatured] = useState([]);
   const [tags, setTags] = useState([]);
 
   const [state, setState] = useState("mint");
   const [error, setError] = useState(false);
 
-  const { wallet, signedIn, contract, connected, artist, get_state } =
+  const { wallet, signedIn, contract, connected, artist, getTransaction } =
     useNear();
+
+  const { transactionHashes } = router.query;
+  useEffect(async () => {
+    if (transactionHashes == undefined) return;
+    const tx = await getTransaction(transactionHashes, wallet.getAccountId());
+    console.log(tx);
+    if (tx.status.SuccessValue != undefined) {
+    }
+  }, [transactionHashes]);
 
   const onAudioUpload = (event) => {
     if (
@@ -96,11 +111,12 @@ export default function Mint() {
     };
   };
 
-  const onArtworkUpload = (event) => {
-    if (event.target.files[0] === null || event.target.files[0] === undefined)
-      return;
+  const onArtworkUpload = async (event) => {
+    const uploaded = event.target.files[0];
+    if (uploaded === null || uploaded === undefined) return;
+    const compressed = await imageCompression(uploaded, COMPRESSION_OPTIONS);
     const reader = new FileReader();
-    reader.readAsDataURL(event.target.files[0]);
+    reader.readAsDataURL(compressed);
     reader.onerror = () => {
       return false;
     };
@@ -113,7 +129,7 @@ export default function Mint() {
           return false;
         }
         setArtworkURL(reader.result);
-        setArtwork(event.target.files[0]);
+        setArtwork(compressed);
         return true;
       };
     };
@@ -155,24 +171,30 @@ export default function Mint() {
 
   const validate_and_mint = async (e) => {
     e.preventDefault();
-    if (artwork == null || audio == null) {
-      alert("Please upload both audio and artwork.");
+    if (audio == null) {
+      alert("Audio is missing. Please upload and try again.");
+      return;
+    }
+    if (artwork == null) {
+      alert("Artwork is missing. Please upload and try again.");
       return;
     }
     setMinting(true);
-    const audio_cid = await client.storeBlob(audio);
-    setLoadingText("Making progess...");
-    const artwork_cid = await client.storeBlob(artwork);
+    const _audio = client.storeBlob(audio);
+    const _artwork = client.storeBlob(artwork);
+    const [audio_cid, artwork_cid] = await Promise.all([_audio, _artwork]);
+    setLoadingText("Redirecting to NEAR wallet for confirmation.");
     const metadata = {
       title: title,
       audio: "https://ipfs.io/ipfs/" + audio_cid,
       media: "https://ipfs.io/ipfs/" + artwork_cid,
+      featured: featured.join(" "),
+      description: tags.join(" "),
     };
-    setLoadingText("Almost Done! Hang in there.");
     await contract.nft_mint(
       {
         token_id: uuidv4(),
-        metadata: metadata,
+        metadata,
         receiver_id: wallet.getAccountId(),
       },
       300000000000000,
@@ -273,6 +295,10 @@ export default function Mint() {
             multiple
             freeSolo
             options={[]}
+            value={featured}
+            onChange={(e, value) => {
+              setFeatured(value);
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Featured Artists (Optional)" />
             )}
@@ -352,7 +378,7 @@ export default function Mint() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className="p-8 text-3xl font-bold font-mono">nearsound / minting</h1>
+      <Header />
       <div className="flex flex-col items-center justify-center h-full w-full gap-2">
         {content()}
       </div>

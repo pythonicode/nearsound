@@ -6,6 +6,7 @@ import NearLogin from "./NearLogin";
 import NearAccount from "./NearAccount";
 import { useNear } from "../context/NearProvider";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const variants = {
   hidden: { y: -100 },
@@ -15,7 +16,10 @@ const variants = {
 
 export default function Header() {
   const router = useRouter();
-  const { signedIn } = useNear();
+
+  const [query, setQuery] = useState("");
+
+  const { signedIn, terms, search } = useNear();
 
   const action_button = () => {
     if (!signedIn) return <NearLogin />;
@@ -43,11 +47,17 @@ export default function Header() {
         <form className="flex flex-row items-center justify-center gap-4">
           <Autocomplete
             disablePortal
-            options={["Nothing yet."]}
+            value={query}
+            onChange={(e, val) => setQuery(val)}
+            options={terms}
             sx={{ width: "300px" }}
             renderInput={(params) => <TextField {...params} label="Search" />}
           />
-          <Button>
+          <Button
+            onClick={() => {
+              search(query);
+            }}
+          >
             <SearchIcon />
             Search
           </Button>

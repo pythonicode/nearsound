@@ -15,6 +15,7 @@
     "@mui/lab": "^5.0.0-alpha.68",
     "@mui/material": "^5.3.0",
     "@supabase/supabase-js": "^1.29.4",
+    "browser-image-compression": "^1.0.17",
     "framer-motion": "^6.2.1",
     "howler": "^2.2.3",
     "near-api-js": "^0.44.2",

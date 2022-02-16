@@ -49,27 +49,29 @@ const build_features = (features) => {
 };
 
 export default function Player({ currentlyPlaying }) {
-  const { song, queue, playing, toggle, seek, duration } = useSound();
+  const {
+    song,
+    queue,
+    playing,
+    toggle,
+    seek,
+    duration,
+    volume,
+    setVolume,
+    setSeek,
+    updateSeek,
+    startSeeking,
+    stopSeeking,
+  } = useSound();
 
   const [repeat, setRepeat] = useState("none");
   const [rotation, setRotation] = useState(0);
-  const [volume, setVolume] = useState(50);
 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     Howler.volume(volume / 100);
   }, [volume]);
-
-  const play_music = () => {
-    song.audio.play();
-    setPlaying(true);
-  };
-
-  const pause_music = () => {
-    song.audio.pause();
-    setPlaying(false);
-  };
 
   const play_pause_button = () => {
     if (playing) return <PauseCircleOutlineIcon fontSize="large" />;
@@ -147,6 +149,7 @@ export default function Player({ currentlyPlaying }) {
           <SkipNextIcon />
         </button>
         <input
+          value={volume}
           onChange={(event) => setVolume(event.target.value)}
           className="rounded-lg appearance-none bg-white h-1 w-20 cursor-pointer transition-all"
           type="range"
@@ -161,7 +164,21 @@ export default function Player({ currentlyPlaying }) {
         <div className="text-xs text-light text-neutral-400 mr-2">
           {fancyTime(seek)}
         </div>
-        <div className="w-80 h-1">
+        <div
+          onMouseEnter={stopSeeking}
+          onMouseMove={(e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            updateSeek((x / rect.width) * duration);
+          }}
+          onMouseLeave={startSeeking}
+          onMouseUp={(e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            setSeek(x / rect.width);
+          }}
+          className="w-80 h-1 py-2"
+        >
           <div
             className="bg-neutral-400 h-1"
             style={{ width: (seek * 100) / duration + "%" }}

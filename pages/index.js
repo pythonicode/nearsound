@@ -25,7 +25,7 @@ export async function getServerSideProps() {
 }
 
 export default function App({ data }) {
-  const { near, wallet, redirect, contract, connected } = useNear();
+  const { near, wallet, redirect, contract, connected, tokens } = useNear();
 
   const router = useRouter();
 
@@ -36,13 +36,8 @@ export default function App({ data }) {
 
   useEffect(async () => {
     if (!connected) return;
-    const tokens = await contract.nft_tokens({
-      from_index: "0",
-      limit: 64,
-    });
-    console.log(tokens);
     setSongs(tokens);
-  }, [connected]);
+  }, [connected, tokens]);
 
   useEffect(() => {
     if (wallet === undefined || wallet === null) return;
@@ -76,7 +71,8 @@ export default function App({ data }) {
             token.metadata.audio,
             token.metadata.media,
             token.metadata.title,
-            "Halfmoon"
+            token.metadata.artist,
+            token.metadata.featured.split(" ")
           );
           return <SongCard key={i} song={song} />;
         })}

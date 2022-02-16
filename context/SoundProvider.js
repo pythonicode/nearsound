@@ -20,7 +20,6 @@ export class Song {
     this.audio = new Howl({
       src: [src],
       html5: true,
-      preload: "metadata",
     });
     this.artwork = artwork;
     this.title = title;
@@ -34,37 +33,35 @@ export function SoundProvider({ children }) {
   const refreshRate = 100;
   const [playing, setPlaying] = useState(false);
 
-  const [song, updateSong] = useState(
-    new Song(
-      "https://bafybeia7xboj3uiveowv5knlrh47sjeyylmftqazkri3mcqa7xix5x6leu.ipfs.dweb.link/",
-      "https://cms-assets.tutsplus.com/cdn-cgi/image/width=360/uploads/users/114/posts/34296/final_image/Final-image.jpg",
-      "Pink Soldiers",
-      "Unknown Artist",
-      []
-    )
-  );
+  const [song, setSong] = useState(new Song("", "", "Song Name", "Artist"));
 
-  const setSong = (song) => {
-    song.audio.load();
-    updateSong(song);
+  const startSeeking = () => {
     setSeeking(
       setInterval(() => {
-        setSeek(song.audio.seek());
+        updateSeek(song.audio.seek());
         setDuration(song.audio.duration());
       }, refreshRate)
     );
-    setPlaying(true);
-    console.log(song.audio);
-    console.log(song.audio.duration());
-    setDuration(song.audio.duration());
-    console.log(duration);
-    song.audio.play();
   };
 
-  const [seek, setSeek] = useState(0);
+  const stopSeeking = () => {
+    clearInterval(seeking);
+  };
+
+  useEffect(() => {
+    console.log(song);
+    if (song.artist == "Artist") return;
+    startSeeking();
+    setPlaying(true);
+    setDuration(song.audio.duration());
+    song.audio.play();
+  }, [song]);
+
+  const [seek, updateSeek] = useState(0);
   const [duration, setDuration] = useState(0);
   const [queue, setQueue] = useState([]);
   const [seeking, setSeeking] = useState(0);
+  const [volume, setVolume] = useState(50);
 
   const toggle = () => {
     if (song === undefined || song === null) return;
@@ -73,15 +70,15 @@ export function SoundProvider({ children }) {
       clearInterval(seeking);
       setPlaying(false);
     } else {
-      setSeeking(
-        setInterval(() => {
-          setSeek(song.audio.seek());
-          setDuration(song.audio.duration());
-        }, refreshRate)
-      );
+      startSeeking();
       song.audio.play();
       setPlaying(true);
     }
+  };
+
+  const setSeek = (value) => {
+    song.audio.seek(value * duration);
+    updateSeek(value * duration);
   };
 
   const addToQueue = (song) => {
@@ -104,7 +101,7 @@ export function SoundProvider({ children }) {
 
   const stopAll = () => {
     setPlaying(false);
-    clearInterval(seeking);
+    stopSeeking();
     Howler.stop();
   };
 
@@ -114,12 +111,18 @@ export function SoundProvider({ children }) {
     playing,
     seek,
     duration,
+    volume,
+    setVolume,
     toggle,
     setSong,
     addToQueue,
     upQueue,
     downQueue,
     stopAll,
+    setSeek,
+    updateSeek,
+    startSeeking,
+    stopSeeking,
   };
 
   return (
