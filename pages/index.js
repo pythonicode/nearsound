@@ -72,6 +72,7 @@ export default function App({ data }) {
             token.metadata.media,
             token.metadata.title,
             token.metadata.artist,
+            token.author_id,
             token.metadata.featured.split(" ")
           );
           return <SongCard key={i} song={song} />;

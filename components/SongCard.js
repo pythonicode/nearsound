@@ -10,19 +10,8 @@ import { Snackbar, Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Song, useSound } from "../context/SoundProvider";
 
-const build_features = (featured) => {
-  let str = "";
-  if (featured === undefined || featured === null || featured.length === 0)
-    return str;
-  featured.forEach((feature) => {
-    str += feature + ", ";
-  });
-  str = str.slice(0, -2);
-  return "(ft. " + str + ")";
-};
-
 export default function SongCard({ song }) {
-  const { setSong, addToQueue, stopAll, play } = useSound();
+  const { setSong, addToQueue, stopAll, play, build_features } = useSound();
   const [snackbar, setSnackbar] = useState(false);
 
   return (

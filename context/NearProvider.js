@@ -8,7 +8,7 @@ export function useNear() {
   return useContext(NearContext);
 }
 
-function decode(data) {
+export function decode(data) {
   let res = "";
   for (let i = 0; i < data.length; i++) res += String.fromCharCode(data[i]);
   return JSON.parse(res);
@@ -34,6 +34,7 @@ export function NearProvider({ children }) {
   const [connected, setConnected] = useState(false);
   const [terms, setTerms] = useState([]);
   const [tokens, setTokens] = useState([]);
+  const [costPerByte, setCostPerByte] = useState(null);
 
   const setup_near = async () => {
     const config = {
@@ -62,10 +63,14 @@ export function NearProvider({ children }) {
       method_name: "get_search_terms",
       args_base64: EMPTY_QUERY,
     });
-    const [default_tokens, search_terms] = await Promise.all([
+    const _request =
+      near_connection.connection.provider.experimental_genesisConfig();
+    const [default_tokens, search_terms, response] = await Promise.all([
       _tokens,
       _search,
+      _request,
     ]);
+    setCostPerByte(response.runtime_config.storage_amount_per_byte);
     setTokens(decode(default_tokens.result));
     setTerms(decode(search_terms.result));
     const contract_connection = new Contract(
@@ -153,6 +158,7 @@ export function NearProvider({ children }) {
     setRedirect,
     search,
     reset_search,
+    costPerByte,
   };
 
   return (

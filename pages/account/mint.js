@@ -21,11 +21,10 @@ import LinearProgress from "@mui/material/LinearProgress";
 import { CircularProgress } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useNear } from "../../context/NearProvider";
+import { useNear, decode } from "../../context/NearProvider";
 import NearLogin from "../../components/NearLogin";
 
 import imageCompression from "browser-image-compression";
-import { SettingsBackupRestoreRounded } from "@mui/icons-material";
 
 const DEFAULT_TAGS = [
   "Rock",
@@ -47,8 +46,8 @@ const Input = styled("input")({
 });
 
 const COMPRESSION_OPTIONS = {
-  maxSizeMB: 99, // 99 MB maximum
-  maxWidthOrHeight: 300, // width/height scaled down to 300px
+  maxSizeMB: 20, // 99 MB maximum
+  maxWidthOrHeight: 1000, // width/height scaled down to 1000px
 };
 
 export default function Mint() {
@@ -82,11 +81,20 @@ export default function Mint() {
 
   const [token, setToken] = useState(null);
 
-  const { wallet, signedIn, contract, connected, artist, getTransaction } =
-    useNear();
+  const {
+    near,
+    wallet,
+    signedIn,
+    contract,
+    connected,
+    artist,
+    getTransaction,
+    costPerByte,
+  } = useNear();
 
   const { transactionHashes } = router.query;
   useEffect(async () => {
+    if (!connected) return;
     if (transactionHashes == undefined) {
       setLoading(false);
       return;
@@ -95,14 +103,24 @@ export default function Mint() {
     if (tx.status.SuccessValue != undefined) {
       const event = tx.receipts_outcome[0].outcome.logs[0];
       const log = JSON.parse(event.slice(event.indexOf(":") + 1));
-      const new_token = await contract.nft_token({
-        token_id: log.data[0].token_ids[0],
+      const _args = Buffer.from(
+        JSON.stringify({
+          token_id: log.data[0].token_ids[0],
+        })
+      ).toString("base64");
+      const _token = await near.connection.provider.query({
+        request_type: "call_function",
+        finality: "final",
+        account_id: "nearsound.testnet",
+        method_name: "nft_token",
+        args_base64: _args,
       });
-      setToken(new_token);
+      console.log(_token);
+      setToken(decode(_token.result));
       setState("success");
       setLoading(false);
     } else setLoading(false);
-  }, [transactionHashes]);
+  }, [transactionHashes, connected]);
 
   const onAudioUpload = (event) => {
     if (
@@ -182,6 +200,20 @@ export default function Mint() {
       );
   };
 
+  const calculate_cost = () => {
+    let total_cost = BigInt(0);
+    const token_id_len = uuidv4().length;
+    for (let i = 0; i < tags.length; i++)
+      total_cost += BigInt(tags[i].length + token_id_len) * BigInt(costPerByte);
+    for (let i = 0; i < featured.length; i++)
+      total_cost +=
+        BigInt(featured[i].length + token_id_len) * BigInt(costPerByte);
+    total_cost += BigInt((title.length + token_id_len) * costPerByte);
+    total_cost += BigInt((artist.length + token_id_len) * costPerByte);
+    total_cost += BigInt(128 * costPerByte); // For IPFS metadata + buffer
+    return total_cost.toString();
+  };
+
   const validate_and_mint = async (e) => {
     e.preventDefault();
     if (audio == null) {
@@ -211,7 +243,7 @@ export default function Mint() {
         receiver_id: wallet.getAccountId(),
       },
       300000000000000,
-      utils.format.parseNearAmount("0.1")
+      calculate_cost()
     );
     setState("success");
     setMinting(false);
@@ -348,6 +380,10 @@ export default function Mint() {
           <Button variant="outlined" type="submit">
             Mint
           </Button>
+          <p className="w-full text-center text-sm text-neutral-500">
+            Estimated Total Cost:{" "}
+            {utils.format.formatNearAmount(calculate_cost())} NEAR
+          </p>
         </form>
       );
     }
@@ -366,19 +402,20 @@ export default function Mint() {
           </h1>
           <h3 className="cursor-default">{token.metadata.artist}</h3>
           <hr className="m-2 border w-20 border-neutral-50 rounded" />
-          <code className="cursor-default">Transaction</code>
-          <Tooltip title="Audio Content ID">
+          <code className="cursor-default">Transaction Details</code>
+          <Tooltip title="Hash">
             <code className="text-xs max-[32ch] overflow-x-hidden cursor-pointer">
-              Hi
+              {transactionHashes}
             </code>
           </Tooltip>
-          <div className="flex flex-row gap-4 mt-2">
-            <Button variant="outlined">Listen Now</Button>
+          <hr className="m-2 border w-20 border-neutral-50 rounded" />
+          <div className="flex flex-row gap-4 mt-2 w-64">
             <Button
               onClick={() => {
                 router.push("/");
               }}
               variant="outlined"
+              fullWidth
             >
               Back to Menu
             </Button>

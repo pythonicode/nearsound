@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 import DrawerContent from "./DrawerContent";
 
-import { Button, Drawer } from "@mui/material";
+import { Button, Drawer, Modal, OutlinedInput, TextField } from "@mui/material";
 
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
@@ -18,6 +18,9 @@ import SavingsIcon from "@mui/icons-material/Savings";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 
 import { useSound } from "../context/SoundProvider";
+import NearLogo from "./NearLogo";
+import { useNear } from "../context/NearProvider";
+import { utils } from "near-api-js";
 
 const fancyTime = (duration) => {
   // Hours, minutes and seconds
@@ -37,17 +40,6 @@ const fancyTime = (duration) => {
   return ret;
 };
 
-const build_features = (features) => {
-  let str = "";
-  if (features === undefined || features === null || features.length === 0)
-    return str;
-  features.forEach((feature) => {
-    str += feature + ", ";
-  });
-  str = str.slice(0, -2);
-  return "(ft. " + str + ")";
-};
-
 export default function Player({ currentlyPlaying }) {
   const {
     song,
@@ -62,12 +54,18 @@ export default function Player({ currentlyPlaying }) {
     updateSeek,
     startSeeking,
     stopSeeking,
+    build_features,
+    setLoop,
+    shuffle,
+    skipForwards,
+    skipBackwards,
   } = useSound();
 
   const [repeat, setRepeat] = useState("none");
   const [rotation, setRotation] = useState(0);
-
   const [open, setOpen] = useState(false);
+
+  const { wallet } = useNear();
 
   useEffect(() => {
     Howler.volume(volume / 100);
@@ -90,8 +88,28 @@ export default function Player({ currentlyPlaying }) {
     else setRepeat("none");
   };
 
-  const shuffle = () => {
+  useEffect(() => {
+    if (repeat == "song") setLoop(true);
+    else setLoop(false);
+  }, [repeat]);
+
+  const shuffle_queue = () => {
     setRotation(rotation + 360);
+    shuffle();
+  };
+
+  const [modal, setModal] = useState(false);
+  const handleOpen = () => setModal(true);
+  const handleClose = () => setModal(false);
+
+  const [tip, setTip] = useState(0);
+
+  const sendTip = async () => {
+    if (song.artist == "Artist") return;
+    await wallet.account().sendMoney(
+      song.account, // receiver account
+      utils.format.parseNearAmount(tip) // amount in yoctoNEAR
+    );
   };
 
   const variants = {
@@ -101,14 +119,27 @@ export default function Player({ currentlyPlaying }) {
   };
 
   return (
-    <motion.footer
-      variants={variants}
-      initial="hidden"
-      animate="enter"
-      exit="exit"
-      transition={{ duration: 1 }}
-      className="w-full flex flex-col items-center justify-center py-4 h-32 gap-2 border-t-4 border-double border-dark-100"
-    >
+    <>
+      <Modal open={modal} onClose={handleClose}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black w-80 h-fit p-10 flex flex-col gap-4 border-neutral-500 border rounded">
+          <div>
+            <h3 className="text-xl">
+              Tip <span className="font-semibold">{song.artist}</span>
+            </h3>
+            <code className="text-xs text-neutral-500">{song.account}</code>
+          </div>
+          <OutlinedInput
+            value={tip}
+            onChange={(e) => {
+              setTip(e.target.value);
+            }}
+            endAdornment={<NearLogo />}
+          ></OutlinedInput>
+          <Button variant="outlined" onClick={sendTip}>
+            Send Transaction
+          </Button>
+        </div>
+      </Modal>
       <Drawer
         open={open}
         onClose={() => {
@@ -117,80 +148,95 @@ export default function Player({ currentlyPlaying }) {
       >
         <DrawerContent queue={queue} />
       </Drawer>
-      <div className="flex flex-row items-center justify-center gap-2">
-        <Button
-          onClick={() => {
-            setOpen(true);
-          }}
-          variant="text"
-        >
-          <QueueMusicIcon sx={{ marginRight: "8px" }} /> QUEUE
-        </Button>
-        <button
-          onClick={update_repeat}
-          className="transition-all hover:opacity-75"
-        >
-          {repeat_icon()}
-        </button>
-        <motion.button
-          onClick={shuffle}
-          animate={{ rotate: rotation }}
-          className="transition-all hover:opacity-75"
-        >
-          <ShuffleIcon />
-        </motion.button>
-        <button className="transition-all hover:opacity-75">
-          <SkipPreviousIcon />
-        </button>
-        <button className="transition-all hover:opacity-75" onClick={toggle}>
-          {play_pause_button()}
-        </button>
-        <button className="transition-all hover:opacity-75">
-          <SkipNextIcon />
-        </button>
-        <input
-          value={volume}
-          onChange={(event) => setVolume(event.target.value)}
-          className="rounded-lg appearance-none bg-white h-1 w-20 cursor-pointer transition-all"
-          type="range"
-          min="0"
-          max="100"
-        />
-        <Button variant="text">
-          <SavingsIcon sx={{ marginRight: "8px" }} /> TIP
-        </Button>
-      </div>
-      <div className="flex flex-row items-center justify-center">
-        <div className="text-xs text-light text-neutral-400 mr-2">
-          {fancyTime(seek)}
+      <motion.footer
+        variants={variants}
+        initial="hidden"
+        animate="enter"
+        exit="exit"
+        transition={{ duration: 1 }}
+        className="w-full flex flex-col items-center justify-center py-4 h-32 gap-2 border-t-4 border-double border-dark-100"
+      >
+        <div className="flex flex-row items-center justify-center gap-2">
+          <Button
+            onClick={() => {
+              setOpen(true);
+            }}
+            variant="text"
+          >
+            <QueueMusicIcon sx={{ marginRight: "8px" }} /> QUEUE
+          </Button>
+          <button
+            onClick={update_repeat}
+            className="transition-all hover:opacity-75"
+          >
+            {repeat_icon()}
+          </button>
+          <motion.button
+            onClick={shuffle_queue}
+            animate={{ rotate: rotation }}
+            className="transition-all hover:opacity-75"
+          >
+            <ShuffleIcon />
+          </motion.button>
+          <button
+            onClick={skipBackwards}
+            className="transition-all hover:opacity-75"
+          >
+            <SkipPreviousIcon />
+          </button>
+          <button className="transition-all hover:opacity-75" onClick={toggle}>
+            {play_pause_button()}
+          </button>
+          <button
+            onClick={skipForwards}
+            className="transition-all hover:opacity-75"
+          >
+            <SkipNextIcon />
+          </button>
+          <input
+            value={volume}
+            onChange={(event) => setVolume(event.target.value)}
+            className="rounded-lg appearance-none bg-white h-1 w-20 cursor-pointer transition-all"
+            type="range"
+            min="0"
+            max="100"
+          />
+          <Button variant="text" onClick={handleOpen}>
+            <SavingsIcon sx={{ marginRight: "8px" }} /> TIP
+          </Button>
         </div>
-        <div
-          onMouseEnter={stopSeeking}
-          onMouseMove={(e) => {
-            const rect = e.target.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            updateSeek((x / rect.width) * duration);
-          }}
-          onMouseLeave={startSeeking}
-          onMouseUp={(e) => {
-            const rect = e.target.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            setSeek(x / rect.width);
-          }}
-          className="w-80 h-1 py-2"
-        >
+        <div className="flex flex-row items-center justify-center">
+          <div className="text-xs text-light text-neutral-400 mr-2">
+            {fancyTime(seek)}
+          </div>
           <div
-            className="bg-neutral-400 h-1"
-            style={{ width: (seek * 100) / duration + "%" }}
-          ></div>
+            onMouseEnter={stopSeeking}
+            onMouseMove={(e) => {
+              const rect = e.target.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              updateSeek((x / rect.width) * duration);
+            }}
+            onMouseLeave={startSeeking}
+            onMouseUp={(e) => {
+              const rect = e.target.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              setSeek(x / rect.width);
+            }}
+            className="w-80 h-1 py-2"
+          >
+            <div
+              className="bg-neutral-400 h-1"
+              style={{ width: (seek * 100) / duration + "%" }}
+            ></div>
+          </div>
+          <div className="text-xs text-light text-neutral-400 ml-2">
+            {fancyTime(duration)}
+          </div>
         </div>
-        <div className="text-xs text-light text-neutral-400 ml-2">
-          {fancyTime(duration)}
+        <div className="text-xs text-light text-neutral-400">
+          {song.title} by {song.artist} {build_features(song.featured)}
         </div>
-      </div>
-      <div className="text-xs text-light text-neutral-400">
-        {song.title} by {song.artist} {build_features(song.featured)}
-      </div>
-    </motion.footer>
+      </motion.footer>
+    </>
   );
 }

@@ -14,6 +14,7 @@ export class Song {
     artwork,
     title,
     artist,
+    account,
     featured = [],
     created = Date.now()
   ) {
@@ -25,7 +26,17 @@ export class Song {
     this.title = title;
     this.artist = artist;
     this.featured = featured;
+    this.account = account;
     this.created = created;
+  }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    let temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
   }
 }
 
@@ -33,7 +44,21 @@ export function SoundProvider({ children }) {
   const refreshRate = 100;
   const [playing, setPlaying] = useState(false);
 
-  const [song, setSong] = useState(new Song("", "", "Song Name", "Artist"));
+  const [song, setSong] = useState(
+    new Song(
+      "",
+      "https://upload.wikimedia.org/wikipedia/commons/7/71/Black.png",
+      "Song Name",
+      "Artist"
+    )
+  );
+
+  const [seek, updateSeek] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [queue, setQueue] = useState([]);
+  const [seeking, setSeeking] = useState(0);
+  const [volume, setVolume] = useState(50);
+  const [loop, setLoop] = useState(false);
 
   const startSeeking = () => {
     setSeeking(
@@ -49,31 +74,52 @@ export function SoundProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log(song);
+    song.audio.once("end", () => {
+      if (queue.length > 0 && !loop) {
+        song.audio.unload();
+        setSong(queue[0]);
+        setQueue(queue.slice(1));
+      }
+    });
+  }, [song, queue]);
+
+  useEffect(() => {
     if (song.artist == "Artist") return;
+    stopSeeking();
     startSeeking();
     setPlaying(true);
     setDuration(song.audio.duration());
     song.audio.play();
   }, [song]);
 
-  const [seek, updateSeek] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [queue, setQueue] = useState([]);
-  const [seeking, setSeeking] = useState(0);
-  const [volume, setVolume] = useState(50);
+  useEffect(() => {
+    song.audio.loop(loop);
+  }, [loop]);
 
   const toggle = () => {
     if (song === undefined || song === null) return;
     if (playing) {
+      stopSeeking();
       song.audio.pause();
-      clearInterval(seeking);
       setPlaying(false);
     } else {
-      startSeeking();
       song.audio.play();
       setPlaying(true);
+      startSeeking();
     }
+  };
+
+  const skipForwards = () => {
+    if (loop) song.audio.seek(0);
+    else if (queue.length > 0) {
+      stopAll();
+      setSong(queue[0]);
+      setQueue(queue.slice(1));
+    }
+  };
+
+  const skipBackwards = () => {
+    song.audio.seek(0);
   };
 
   const setSeek = (value) => {
@@ -99,10 +145,31 @@ export function SoundProvider({ children }) {
     setQueue(arr);
   };
 
+  const shuffle = () => {
+    shuffleArray(queue);
+    setQueue([...queue]);
+  };
+
   const stopAll = () => {
     setPlaying(false);
     stopSeeking();
     Howler.stop();
+  };
+
+  const build_features = (featured) => {
+    let str = "";
+    if (
+      featured === undefined ||
+      featured === null ||
+      featured.length === 0 ||
+      (featured.length === 1 && featured[0] === "")
+    )
+      return str;
+    featured.forEach((feature) => {
+      str += feature + ", ";
+    });
+    str = str.slice(0, -2);
+    return "(ft. " + str + ")";
   };
 
   const context = {
@@ -123,6 +190,11 @@ export function SoundProvider({ children }) {
     updateSeek,
     startSeeking,
     stopSeeking,
+    setLoop,
+    build_features,
+    shuffle,
+    skipForwards,
+    skipBackwards,
   };
 
   return (

@@ -6,25 +6,16 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 
-const build_features = (features) => {
-  let str = "";
-  if (features === undefined || features === null || features.length === 0)
-    return str;
-  features.forEach((feature) => {
-    str += feature + ", ";
-  });
-  str = str.slice(0, -2);
-  return "(ft. " + str + ")";
-};
-
 export default function DrawerContent() {
-  const { song, queue, toggle, addToQueue, upQueue, downQueue, playing } =
+  const { song, queue, toggle, upQueue, downQueue, playing, build_features } =
     useSound();
 
   const play_or_pause = () => {
     if (playing) return <PauseIcon />;
     else return <PlayArrowIcon />;
   };
+
+  console.log(queue);
 
   return (
     <div className="flex flex-col w-80 h-full bg-dark border-r-2 border-dark-200 overflow-y-scroll">
