@@ -25,6 +25,7 @@ import { useNear } from "../../context/NearProvider";
 import NearLogin from "../../components/NearLogin";
 
 import imageCompression from "browser-image-compression";
+import { SettingsBackupRestoreRounded } from "@mui/icons-material";
 
 const DEFAULT_TAGS = [
   "Rock",
@@ -79,16 +80,28 @@ export default function Mint() {
   const [state, setState] = useState("mint");
   const [error, setError] = useState(false);
 
+  const [token, setToken] = useState(null);
+
   const { wallet, signedIn, contract, connected, artist, getTransaction } =
     useNear();
 
   const { transactionHashes } = router.query;
   useEffect(async () => {
-    if (transactionHashes == undefined) return;
-    const tx = await getTransaction(transactionHashes, wallet.getAccountId());
-    console.log(tx);
-    if (tx.status.SuccessValue != undefined) {
+    if (transactionHashes == undefined) {
+      setLoading(false);
+      return;
     }
+    const tx = await getTransaction(transactionHashes, wallet.getAccountId());
+    if (tx.status.SuccessValue != undefined) {
+      const event = tx.receipts_outcome[0].outcome.logs[0];
+      const log = JSON.parse(event.slice(event.indexOf(":") + 1));
+      const new_token = await contract.nft_token({
+        token_id: log.data[0].token_ids[0],
+      });
+      setToken(new_token);
+      setState("success");
+      setLoading(false);
+    } else setLoading(false);
   }, [transactionHashes]);
 
   const onAudioUpload = (event) => {
@@ -205,7 +218,7 @@ export default function Mint() {
   };
 
   const content = () => {
-    if (!connected) {
+    if (!connected || loading) {
       return (
         <>
           <CircularProgress />
@@ -343,23 +356,30 @@ export default function Mint() {
         <div className="flex flex-col items-center justify-center h-full w-full gap-2 overflow-y-scroll">
           <img
             className="w-64 h-64 overflow-hidden object-center object-cover rounded"
-            src={"https://ipfs.io/ipfs/" + artworkCID}
+            src={token.metadata.media}
             alt="Song Artwork"
             draggable="false"
           />
           <hr className="m-2 border w-20 border-neutral-50 rounded" />
-          <h1 className="text-3xl font-bold cursor-default">{title}</h1>
-          <h3 className="cursor-default">{artist}</h3>
+          <h1 className="text-3xl font-bold cursor-default">
+            {token.metadata.title}
+          </h1>
+          <h3 className="cursor-default">{token.metadata.artist}</h3>
           <hr className="m-2 border w-20 border-neutral-50 rounded" />
           <code className="cursor-default">Transaction</code>
           <Tooltip title="Audio Content ID">
             <code className="text-xs max-[32ch] overflow-x-hidden cursor-pointer">
-              {audioCID}
+              Hi
             </code>
           </Tooltip>
           <div className="flex flex-row gap-4 mt-2">
             <Button variant="outlined">Listen Now</Button>
-            <Button onClick={router.replace("/")} variant="outlined">
+            <Button
+              onClick={() => {
+                router.push("/");
+              }}
+              variant="outlined"
+            >
               Back to Menu
             </Button>
           </div>

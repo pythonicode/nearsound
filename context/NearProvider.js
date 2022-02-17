@@ -1,12 +1,6 @@
 // Packages //
 import { useState, useEffect, useContext, createContext } from "react";
-import {
-  keyStores,
-  connect,
-  providers,
-  WalletConnection,
-  Contract,
-} from "near-api-js";
+import { keyStores, connect, WalletConnection, Contract } from "near-api-js";
 
 const NearContext = createContext();
 
@@ -14,11 +8,22 @@ export function useNear() {
   return useContext(NearContext);
 }
 
-export function NearProvider({ children }) {
-  const provider = new providers.JsonRpcProvider({
-    url: "https://archival-rpc.testnet.near.org",
-  });
+function decode(data) {
+  let res = "";
+  for (let i = 0; i < data.length; i++) res += String.fromCharCode(data[i]);
+  return JSON.parse(res);
+}
 
+const EMPTY_QUERY = Buffer.from("{}").toString("base64");
+
+const DEFAULT_SEARCH = Buffer.from(
+  JSON.stringify({
+    from_index: "0",
+    limit: 64,
+  })
+).toString("base64");
+
+export function NearProvider({ children }) {
   const [near, setNear] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [contract, setContract] = useState(null);
@@ -43,6 +48,26 @@ export function NearProvider({ children }) {
     setNear(near_connection);
     const wallet_connection = new WalletConnection(near_connection);
     setWallet(wallet_connection);
+    const _tokens = near_connection.connection.provider.query({
+      request_type: "call_function",
+      finality: "final",
+      account_id: "nearsound.testnet",
+      method_name: "nft_tokens",
+      args_base64: DEFAULT_SEARCH,
+    });
+    const _search = near_connection.connection.provider.query({
+      request_type: "call_function",
+      finality: "final",
+      account_id: "nearsound.testnet",
+      method_name: "get_search_terms",
+      args_base64: EMPTY_QUERY,
+    });
+    const [default_tokens, search_terms] = await Promise.all([
+      _tokens,
+      _search,
+    ]);
+    setTokens(decode(default_tokens.result));
+    setTerms(decode(search_terms.result));
     const contract_connection = new Contract(
       wallet_connection.account(), // the account object that is connecting
       "nearsound.testnet",
@@ -52,31 +77,15 @@ export function NearProvider({ children }) {
           "get_artist",
           "get_search_terms",
           "nft_tokens_for_search",
+          "nft_token",
         ], // view methods do not change state but usually return a value
         changeMethods: ["nft_mint", "create_artist"], // change methods modify state
         sender: wallet_connection.account(), // account object to initialize and sign transactions.
       }
     );
     setContract(contract_connection);
-    const _artist = contract_connection.get_artist({
-      account_id: wallet_connection.getAccountId(),
-    });
-    const _search = contract_connection.get_search_terms();
-    const _tokens = contract_connection.nft_tokens({
-      from_index: "0",
-      limit: 64,
-    });
-    const [artist_name, search_terms, default_tokens] = await Promise.all([
-      _artist,
-      _search,
-      _tokens,
-    ]);
-    if (artist_name != "None") {
-      setRoles([...roles, "artist"]);
-      setArtist(artist_name);
-    }
-    setTerms(search_terms);
-    setTokens(default_tokens);
+    setRoles([...roles, "artist"]);
+    setArtist("Halfmoon");
     setConnected(true);
   };
 
@@ -88,7 +97,7 @@ export function NearProvider({ children }) {
   };
 
   const getTransaction = async (hash, account_id) => {
-    const result = await provider.txStatus(hash, account_id);
+    const result = await near.connection.provider.txStatus(hash, account_id);
     return result;
   };
 
@@ -98,8 +107,25 @@ export function NearProvider({ children }) {
       from_index: "0",
       limit: 64,
     });
-    console.log(_tokens);
-    setTokens(_tokens);
+    if (_tokens.length == 0) reset_search();
+    else setTokens(_tokens);
+  };
+
+  const reset_search = async (from_index = "0", limit = 64) => {
+    const _args = Buffer.from(
+      JSON.stringify({
+        from_index,
+        limit,
+      })
+    ).toString("base64");
+    const response = await near.connection.provider.query({
+      request_type: "call_function",
+      finality: "final",
+      account_id: "nearsound.testnet",
+      method_name: "nft_tokens",
+      args_base64: _args,
+    });
+    setTokens(decode(response.result));
   };
 
   useEffect(() => {
@@ -126,6 +152,7 @@ export function NearProvider({ children }) {
     redirect,
     setRedirect,
     search,
+    reset_search,
   };
 
   return (
