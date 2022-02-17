@@ -8,17 +8,30 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
     "@fontsource/inter": "^4.5.1",
+    "@mui/icons-material": "^5.3.0",
+    "@mui/lab": "^5.0.0-alpha.68",
+    "@mui/material": "^5.3.0",
+    "@supabase/supabase-js": "^1.29.4",
+    "browser-image-compression": "^1.0.17",
+    "framer-motion": "^6.2.1",
     "howler": "^2.2.3",
     "near-api-js": "^0.44.2",
-    "next": "12.0.8",
+    "near-provider": "^1.0.92",
+    "next": "^12.0.8",
+    "nft.storage": "^5.2.3",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-tsparticles": "^1.39.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.2",
     "eslint": "8.7.0",
-    "eslint-config-next": "12.0.8",
+    "eslint-config-next": "^0.2.4",
+    "file-loader": "^6.2.0",
     "postcss": "^8.4.5",
     "tailwindcss": "^3.0.15"
   }
