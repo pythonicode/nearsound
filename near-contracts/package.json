@@ -1,0 +1,13 @@
+{
+  "name": "nearsound-contracts",
+  "version": "1.0.0",
+  "description": "Contracts based on the NEAR NFT Tutorial by Ben Kurrek",
+  "author": "Anthony Riley",
+  "license": "ISC",
+  "scripts": {
+    "build": "cd nft-contract && ./build.sh && cd .. && ls && cd market-contract && ./build.sh && cd .."
+  },
+  "dependencies": {
+    "near-cli": "^3.2.0"
+  }
+}
