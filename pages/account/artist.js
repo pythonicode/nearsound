@@ -34,12 +34,13 @@ function Artist() {
 
   const create_artist = async (e) => {
     e.preventDefault();
+    console.log(artist);
     await contract.create_artist(
       {
         artist_name: artist,
       },
       300000000000000, // attached GAS (optional)
-      ((artist.length + 5) * costPerByte).toString()
+      utils.format.parseNearAmount("0.01")
     );
   };
 
