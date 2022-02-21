@@ -81,20 +81,26 @@ export default function Mint() {
 
   const [token, setToken] = useState(null);
 
+  const [artist, setArtist] = useState("None");
+
   const {
     near,
     wallet,
     signedIn,
     contract,
     connected,
-    artist,
     getTransaction,
     costPerByte,
   } = useNear();
 
   const { transactionHashes } = router.query;
+
   useEffect(async () => {
     if (!connected) return;
+    const _artist = await contract.get_artist({
+      account_id: wallet.getAccountId(),
+    });
+    setArtist(_artist);
     if (transactionHashes == undefined) {
       setLoading(false);
       return;
@@ -115,12 +121,15 @@ export default function Mint() {
         method_name: "nft_token",
         args_base64: _args,
       });
-      console.log(_token);
       setToken(decode(_token.result));
       setState("success");
       setLoading(false);
     } else setLoading(false);
   }, [transactionHashes, connected]);
+
+  useEffect(async () => {
+    if (!connected) return;
+  }, [connected]);
 
   const onAudioUpload = (event) => {
     if (
@@ -267,20 +276,22 @@ export default function Mint() {
         </>
       );
     }
-    if (artist == "No Artist") {
-      <>
-        <h3 className="mb-2">
-          You must create an artist account before minting.
-        </h3>
-        <Button
-          onClick={() => {
-            router.push("/account/artist");
-          }}
-          variant="outlined"
-        >
-          Create Artist Account
-        </Button>
-      </>;
+    if (artist == "None") {
+      return (
+        <>
+          <h3 className="mb-2">
+            You must create an artist account before minting.
+          </h3>
+          <Button
+            onClick={() => {
+              router.push("/account/artist");
+            }}
+            variant="outlined"
+          >
+            Create Artist Account
+          </Button>
+        </>
+      );
     }
     if (minting) {
       return (

@@ -70,15 +70,15 @@ export default function Account() {
               <h2 className="text-xl font-bold">Actions</h2>
             </div>
             <hr className="border-b-1 my-2"></hr>
-            <MintSong
-              onClick={() => {
-                router.push("/account/mint");
-              }}
-              roles={roles}
-            />
             <CreateArtist
               onClick={() => {
                 router.push("/account/artist");
+              }}
+              roles={roles}
+            />
+            <MintSong
+              onClick={() => {
+                router.push("/account/mint");
               }}
               roles={roles}
             />

@@ -5,14 +5,31 @@ import { Button, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNear } from "../../context/NearProvider";
 import { utils } from "near-api-js";
+import { useRouter } from "next/router";
 
 function Artist() {
-  const { wallet, contract, signedIn } = useNear();
+  const { wallet, contract, signedIn, costPerByte, connected, getTransaction } =
+    useNear();
   const [loading, setLoading] = useState(true);
   const [artist, setArtist] = useState("");
+  const [name, setName] = useState(null);
 
-  useEffect(() => {
-    if (wallet != undefined) setLoading(false);
+  const router = useRouter();
+
+  const { transactionHashes } = router.query;
+
+  useEffect(async () => {
+    if (!connected) return;
+    const _artist = await contract.get_artist({
+      account_id: wallet.getAccountId(),
+    });
+    setName(_artist);
+    if (transactionHashes == undefined) {
+      setLoading(false);
+      return;
+    }
+    const tx = await getTransaction(transactionHashes, wallet.getAccountId());
+    if (tx.status.SuccessValue != undefined) router.replace("");
   });
 
   const create_artist = async (e) => {
@@ -22,12 +39,12 @@ function Artist() {
         artist_name: artist,
       },
       300000000000000, // attached GAS (optional)
-      utils.format.parseNearAmount("0.01") // attached deposit in yoctoNEAR (optional)
+      ((artist.length + 5) * costPerByte).toString()
     );
   };
 
   const content = () => {
-    if (loading) {
+    if (!connected || loading) {
       return (
         <>
           <CircularProgress />
@@ -41,6 +58,22 @@ function Artist() {
             You must connect to NEAR before accessing this page.
           </h3>
           <NearLogin />
+        </>
+      );
+    }
+    if (name != null) {
+      return (
+        <>
+          <h3 className="text-xl font-bold mb-4">Your Artist Name</h3>
+          <h1 className="text-8xl">{name}</h1>
+          <Button
+            onClick={() => {
+              router.push("/account");
+            }}
+            variant="outlined"
+          >
+            Back To Menu
+          </Button>
         </>
       );
     }
