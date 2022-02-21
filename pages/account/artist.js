@@ -61,7 +61,7 @@ function Artist() {
         </>
       );
     }
-    if (name != null) {
+    if (name != "None") {
       return (
         <>
           <h3 className="text-xl font-bold mb-4">Your Artist Name</h3>
