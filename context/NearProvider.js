@@ -80,9 +80,6 @@ export function NearProvider({ children }) {
       }
     );
     setContract(contract_connection);
-    const _artist = contract_connection.get_artist({
-      account_id: wallet_connection.getAccountId(),
-    });
     const [default_tokens, search_terms, response] = await Promise.all([
       _tokens,
       _search,
