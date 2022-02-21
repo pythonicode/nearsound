@@ -29,8 +29,7 @@ export function NearProvider({ children }) {
   const [contract, setContract] = useState(null);
   const [redirect, setRedirect] = useState(true);
   const [signedIn, setSignedIn] = useState(false);
-  const [roles, setRoles] = useState(["listener"]);
-  const [artist, setArtist] = useState("No Artist");
+  const [roles, setRoles] = useState(["listener", "artist"]);
   const [connected, setConnected] = useState(false);
   const [terms, setTerms] = useState([]);
   const [tokens, setTokens] = useState([]);
@@ -65,14 +64,6 @@ export function NearProvider({ children }) {
     });
     const _request =
       near_connection.connection.provider.experimental_genesisConfig();
-    const [default_tokens, search_terms, response] = await Promise.all([
-      _tokens,
-      _search,
-      _request,
-    ]);
-    setCostPerByte(response.runtime_config.storage_amount_per_byte);
-    setTokens(decode(default_tokens.result));
-    setTerms(decode(search_terms.result));
     const contract_connection = new Contract(
       wallet_connection.account(), // the account object that is connecting
       "nearsound.testnet",
@@ -89,8 +80,17 @@ export function NearProvider({ children }) {
       }
     );
     setContract(contract_connection);
-    setRoles([...roles, "artist"]);
-    setArtist("Halfmoon");
+    const _artist = contract_connection.get_artist({
+      account_id: wallet_connection.getAccountId(),
+    });
+    const [default_tokens, search_terms, response] = await Promise.all([
+      _tokens,
+      _search,
+      _request,
+    ]);
+    setCostPerByte(response.runtime_config.storage_amount_per_byte);
+    setTokens(decode(default_tokens.result));
+    setTerms(decode(search_terms.result));
     setConnected(true);
   };
 
@@ -148,7 +148,6 @@ export function NearProvider({ children }) {
     contract,
     connected,
     roles,
-    artist,
     terms,
     tokens,
     connect_to_near,

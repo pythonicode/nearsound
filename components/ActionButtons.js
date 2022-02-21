@@ -17,7 +17,7 @@ export function MintSong({ onClick, roles }) {
 }
 
 export function CreateArtist({ onClick, roles }) {
-  if (!roles.includes("artist")) {
+  if (!roles.includes("advertiser")) {
     return (
       <ActionButton onClick={onClick} variant="outlined">
         Create Artist Account
